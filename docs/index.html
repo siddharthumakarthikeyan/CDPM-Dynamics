@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coupled Dynamics of a Quadrotor-Based Cable-Driven Parallel Manipulator</title>
+<meta name="description" content="MATLAB/Simulink model of four quadrotors and four mobile robots holding one platform on eight cables, with cable tension coupling.">
+<link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro&display=swap" rel="stylesheet">
+<style>
+/* Project page in the style of the Nerfies academic template (nerfies.github.io), rebuilt without external CSS. */
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:20px}
+body{margin:0;background:#fff;color:#4a4a4a;font:16px/1.5 "Noto Sans",sans-serif;overflow-x:clip}
+a{color:#3273dc;text-decoration:none}a:hover{color:#363636}
+img{max-width:100%;height:auto;display:block}
+.container{max-width:960px;margin:0 auto;padding:0 24px}
+.narrow{max-width:800px;margin:0 auto}
+.hero{padding:3rem 0 1.5rem;text-align:center}
+.publication-title{font-family:"Google Sans",sans-serif;font-size:3rem;line-height:1.125;color:#363636;font-weight:400;margin:0 0 1.5rem}
+.publication-authors{font-family:"Google Sans",sans-serif;font-size:1.25rem;color:#4a4a4a;margin:0 0 .3rem}
+.publication-affil{font-family:"Google Sans",sans-serif;font-size:1.1rem;color:#4a4a4a;margin:0 0 .3rem}
+.publication-venue{font-family:"Google Sans",sans-serif;font-size:1.1rem;color:#4a4a4a;margin:.3rem 0 1rem}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin:1.2rem 0 0}
+.button{display:inline-flex;align-items:center;gap:.5em;height:2.5em;padding:0 1.2em;border-radius:290486px;background:#363636;color:#fff;
+  font:400 1rem "Noto Sans",sans-serif;border:0;cursor:pointer}
+.button:hover{background:#2f2f2f;color:#fff}
+.button:focus-visible{outline:3px solid #3273dc;outline-offset:2px}
+.button svg{width:1.05em;height:1.05em;fill:currentColor;flex:none}
+.teaser{padding:0 0 2rem}
+.teaser img{width:100%;border-radius:0}
+.teaser .subtitle{font-family:"Google Sans",sans-serif;font-size:1.25rem;color:#4a4a4a;text-align:center;margin:1rem auto 0;max-width:820px}
+section.section{padding:2.5rem 0}
+section.light{background:#f5f5f5}
+h2.title{font-family:"Google Sans",sans-serif;font-size:2rem;font-weight:600;color:#363636;text-align:center;margin:0 0 1.5rem;line-height:1.125}
+h3.title{font-family:"Google Sans",sans-serif;font-size:1.5rem;font-weight:600;color:#363636;margin:2rem 0 1rem;line-height:1.125}
+.content p{text-align:justify;margin:0 0 1em}
+.content ul{margin:0 0 1em;padding-left:1.5em}.content li{margin:.35em 0}
+.content b{color:#363636}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem}
+figure{margin:0}
+figcaption{font-size:.95rem;color:#4a4a4a;margin-top:.6rem;text-align:center}
+.full{margin:1.5rem 0}
+.full figcaption{text-align:justify}
+table{width:100%;border-collapse:collapse;font-size:.95rem;margin:1rem 0}
+th,td{padding:.5em .75em;border-bottom:1px solid #dbdbdb;text-align:left;vertical-align:top}
+th{color:#363636;font-weight:600;border-bottom-width:2px}
+.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.bibwrap{position:relative}
+pre{background:#fff;border:1px solid #dbdbdb;color:#4a4a4a;padding:1.25rem 1.5rem;overflow-x:auto;font:.875rem/1.5 monospace;margin:0;border-radius:4px}
+.copy{position:absolute;top:.6rem;right:.6rem;height:2em;font-size:.85rem}
+footer{padding:3rem 0 4rem;font-size:.9rem;color:#4a4a4a;text-align:center}
+footer p{margin:.4rem auto;max-width:720px}
+@media(max-width:768px){.publication-title{font-size:2rem}.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}.publication-authors{font-size:1.1rem}table{font-size:.85rem}th,td{padding:.45em .4em}}
+
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:0 auto;max-width:760px}
+.flow .row{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;width:100%}
+.flow .box{flex:1 1 0;min-width:150px;max-width:260px;border:1px solid #dbdbdb;border-radius:6px;padding:.7rem .9rem;background:#fff;text-align:center}
+.flow .box b{display:block;font-family:"Google Sans",sans-serif;color:#363636;font-size:1rem;font-weight:600}
+.flow .box span{display:block;font-size:.85rem;color:#4a4a4a;margin-top:.2rem}
+.flow .box.key{border-color:#363636;border-width:2px}
+.flow .arrow{width:2px;height:22px;background:#b5b5b5;position:relative;margin:.3rem 0}
+.flow .arrow::after{content:"";position:absolute;bottom:-5px;left:-4px;border:5px solid transparent;border-top:6px solid #b5b5b5}
+.teaser .flowwrap{background:#fafafa;border:1px solid #eee;border-radius:6px;padding:1.75rem 1rem}
+.fsm{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.4rem;font-family:"Google Sans",sans-serif;margin:1rem 0}
+.fsm span{border:1px solid #dbdbdb;border-radius:999px;padding:.3em .9em;background:#fff;color:#363636;font-size:.9rem}
+.fsm i{color:#b5b5b5;font-style:normal}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin:1.5rem 0}
+.stats div{text-align:center;border:1px solid #eee;border-radius:6px;padding:1rem .5rem}
+.stats b{display:block;font-family:"Google Sans",sans-serif;font-size:1.8rem;color:#363636;font-weight:400;line-height:1.1}
+.stats span{font-size:.85rem;color:#4a4a4a}
+.credit{border-left:3px solid #363636;background:#f5f5f5;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:0 4px 4px 0}
+.credit p{margin:0;text-align:left}
+code{font-family:monospace;font-size:.9em;background:#f5f5f5;padding:.1em .35em;border-radius:3px;overflow-wrap:anywhere}
+pre code{background:none;padding:0}
+.cmd{margin:.5rem 0 1rem}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.flow .box{max-width:none}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="container narrow">
+    <h1 class="publication-title">Coupled Dynamics of a Quadrotor-Based Cable-Driven Parallel Manipulator</h1>
+    <p class="publication-authors"><a href="https://github.com/siddharthumakarthikeyan">Siddharth Umakarthikeyan</a></p>
+    <p class="publication-affil">SASTRA Deemed to be University, India</p>
+    <p class="publication-venue">Doctoral research · MATLAB / Simulink</p>
+    <div class="links"><a class="button" href="https://github.com/siddharthumakarthikeyan/CDPM-Dynamics"><svg viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8z"/></svg>Code</a><a class="button" href="https://siddharthumakarthikeyan.github.io/QCDPM-Isaac-Sim/"><svg viewBox="0 0 640 512"><path d="M278.9 511.5l-61-17.7c-6.4-1.8-10-8.5-8.2-14.9L346.2 8.7c1.8-6.4 8.5-10 14.9-8.2l61 17.7c6.4 1.8 10 8.5 8.2 14.9L293.8 503.3c-1.9 6.4-8.5 10.1-14.9 8.2zm-114-112.2l43.5-46.4c4.6-4.9 4.3-12.7-.8-17.2L117 256l90.6-79.7c5.1-4.5 5.5-12.3.8-17.2l-43.5-46.4c-4.5-4.8-12.1-5.1-17-.5L3.8 247.2c-5.1 4.7-5.1 12.8 0 17.5l144.1 135.1c4.9 4.6 12.5 4.4 17-.5zm327.2.6l144.1-135.1c5.1-4.7 5.1-12.8 0-17.5L492.1 112.1c-4.8-4.5-12.4-4.3-17 .5L431.6 159c-4.6 4.9-4.3 12.7.8 17.2L523 256l-90.6 79.7c-5.1 4.5-5.5 12.3-.8 17.2l43.5 46.4c4.5 4.9 12.1 5.1 17 .6z"/></svg>Isaac Sim version</a><a class="button" href="#BibTeX"><svg viewBox="0 0 512 512"><path d="M464 32H336c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48zm-288 0H48C21.5 32 0 53.5 0 80v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48z"/></svg>BibTeX</a></div>
+  </div>
+</section>
+
+<section class="teaser">
+  <div class="container">
+    <img src="media/qcdpm-isaac-sim.jpg" width="1280" height="536" alt="Quadrotors and ground robots 3D-printing a large spiral with a cable-suspended platform, rendered in NVIDIA Isaac Sim">
+    <p class="subtitle"><b>Eight robots, one payload.</b> Four quadrotors and four ground robots each hold one corner of a rigid platform; the cable tensions couple all nine bodies. Render of the same system in NVIDIA Isaac Sim.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container narrow">
+    <h2 class="title">Abstract</h2>
+    <div class="content">
+<p>This model derives and simulates the combined dynamics of a quadrotor-based mobile cable-driven parallel manipulator: eight robots that share one payload. Four quadrotors (U1–U4) act as upper anchors and four two-wheel differential-drive mobile robots (L1–L4) act as lower anchors. Each robot is connected by a cable to one corner of a rigid moving platform, so every robot feels the platform and every other robot through the cable tensions.</p>
+<p>The model is built in MATLAB/Simulink from individual robot dynamics upwards. Each cable produces a force only when it is taut, cable forces are transformed between body and global frames, and the platform responds to the sum of all eight cable forces and moments. The model is the dynamic foundation for the later control and simulation work on this system.</p>
+</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container narrow">
+    <h2 class="title">Model</h2>
+    <svg viewBox="0 0 760 450" role="img" aria-label="Four quadrotors and four ground robots holding a platform on eight cables" style="width:100%;max-width:760px;display:block;margin:0 auto;font-family:'Google Sans',sans-serif">
+<line x1="20" y1="430" x2="740" y2="430" stroke="#dbdbdb" stroke-width="2"/>
+<line x1="110" y1="66" x2="350" y2="192" stroke="#3273dc" stroke-width="1.6"/><line x1="650" y1="66" x2="410" y2="192" stroke="#3273dc" stroke-width="1.6"/><line x1="560" y1="36" x2="402" y2="186" stroke="#3273dc" stroke-width="1.6"/><line x1="200" y1="36" x2="358" y2="186" stroke="#3273dc" stroke-width="1.6"/><line x1="90" y1="366" x2="350" y2="240" stroke="#e07b39" stroke-width="1.6"/><line x1="670" y1="366" x2="410" y2="240" stroke="#e07b39" stroke-width="1.6"/><line x1="540" y1="396" x2="402" y2="246" stroke="#e07b39" stroke-width="1.6"/><line x1="220" y1="396" x2="358" y2="246" stroke="#e07b39" stroke-width="1.6"/>
+<g><polygon points="350,192 402,186 410,192 410,240 358,246 350,240" fill="#f5f5f5" stroke="#363636" stroke-width="2"/>
+<line x1="350" y1="192" x2="358" y2="198" stroke="#363636" stroke-width="1.2"/><line x1="358" y1="198" x2="410" y2="192" stroke="#363636" stroke-width="1.2"/><line x1="358" y1="198" x2="358" y2="246" stroke="#363636" stroke-width="1.2"/>
+<text x="380" y="272" text-anchor="middle" font-size="13" fill="#4a4a4a">Moving platform (MP)</text></g>
+<g><line x1="84" y1="60" x2="136" y2="60" stroke="#363636" stroke-width="3"/><ellipse cx="84" cy="55" rx="13" ry="3.5" fill="none" stroke="#363636" stroke-width="1.5"/><ellipse cx="136" cy="55" rx="13" ry="3.5" fill="none" stroke="#363636" stroke-width="1.5"/><rect x="101" y="56" width="18" height="10" rx="2" fill="#363636"/><text x="110" y="44" text-anchor="middle" font-size="13" fill="#4a4a4a">U1</text></g><g><line x1="624" y1="60" x2="676" y2="60" stroke="#363636" stroke-width="3"/><ellipse cx="624" cy="55" rx="13" ry="3.5" fill="none" stroke="#363636" stroke-width="1.5"/><ellipse cx="676" cy="55" rx="13" ry="3.5" fill="none" stroke="#363636" stroke-width="1.5"/><rect x="641" y="56" width="18" height="10" rx="2" fill="#363636"/><text x="650" y="44" text-anchor="middle" font-size="13" fill="#4a4a4a">U2</text></g><g><line x1="534" y1="30" x2="586" y2="30" stroke="#363636" stroke-width="3"/><ellipse cx="534" cy="25" rx="13" ry="3.5" fill="none" stroke="#363636" stroke-width="1.5"/><ellipse cx="586" cy="25" rx="13" ry="3.5" fill="none" stroke="#363636" stroke-width="1.5"/><rect x="551" y="26" width="18" height="10" rx="2" fill="#363636"/><text x="560" y="14" text-anchor="middle" font-size="13" fill="#4a4a4a">U3</text></g><g><line x1="174" y1="30" x2="226" y2="30" stroke="#363636" stroke-width="3"/><ellipse cx="174" cy="25" rx="13" ry="3.5" fill="none" stroke="#363636" stroke-width="1.5"/><ellipse cx="226" cy="25" rx="13" ry="3.5" fill="none" stroke="#363636" stroke-width="1.5"/><rect x="191" y="26" width="18" height="10" rx="2" fill="#363636"/><text x="200" y="14" text-anchor="middle" font-size="13" fill="#4a4a4a">U4</text></g>
+<g><rect x="62" y="366" width="56" height="22" rx="4" fill="#fff" stroke="#363636" stroke-width="2"/><circle cx="74" cy="390" r="7" fill="#363636"/><circle cx="106" cy="390" r="7" fill="#363636"/><text x="90" y="416" text-anchor="middle" font-size="13" fill="#4a4a4a">L1</text></g><g><rect x="642" y="366" width="56" height="22" rx="4" fill="#fff" stroke="#363636" stroke-width="2"/><circle cx="654" cy="390" r="7" fill="#363636"/><circle cx="686" cy="390" r="7" fill="#363636"/><text x="670" y="416" text-anchor="middle" font-size="13" fill="#4a4a4a">L2</text></g><g><rect x="512" y="396" width="56" height="22" rx="4" fill="#fff" stroke="#363636" stroke-width="2"/><circle cx="524" cy="420" r="7" fill="#363636"/><circle cx="556" cy="420" r="7" fill="#363636"/><text x="540" y="446" text-anchor="middle" font-size="13" fill="#4a4a4a">L3</text></g><g><rect x="192" y="396" width="56" height="22" rx="4" fill="#fff" stroke="#363636" stroke-width="2"/><circle cx="204" cy="420" r="7" fill="#363636"/><circle cx="236" cy="420" r="7" fill="#363636"/><text x="220" y="446" text-anchor="middle" font-size="13" fill="#4a4a4a">L4</text></g>
+<g font-size="12" fill="#4a4a4a"><line x1="560" y1="300" x2="590" y2="300" stroke="#3273dc" stroke-width="2"/><text x="598" y="304">upper cables (quadrotors)</text>
+<line x1="560" y1="320" x2="590" y2="320" stroke="#e07b39" stroke-width="2"/><text x="598" y="324">lower cables (ground robots)</text></g>
+</svg><div class="content" style="margin-top:1.5rem"><ul>
+<li><b>Quadrotors (×4).</b> Full 6-DoF rigid-body dynamics in each <i>QuadRotor</i> subsystem: translational and rotational accelerations from rotor thrust, gravity and the cable force at the attachment point, with body-to-global transformation.</li>
+<li><b>Differential-drive mobile robots (×4).</b> Planar dynamics driven by left and right wheel torques, wheel radius, track width and yaw inertia, plus the cable force at the winch point, transformed to the global frame.</li>
+<li><b>Moving platform.</b> Newton–Euler dynamics of a rigid box; each of its eight corners is located from the platform pose (position and roll, pitch, yaw) and receives one cable.</li>
+<li><b>Cable model.</b> For every cable, the force direction follows the vector between robot anchor and platform corner, and an <code>isTension</code> condition switches the force off when the cable would be in compression, so slack is represented.</li>
+<li><b>Coupling.</b> A force-generator stage collects the eight cable forces in x, y and z, applies them with opposite sign to each robot and to the platform, and closes the loop for the next integration step.</li>
+<li><b>Visualisation.</b> MATLAB scripts draw the body frame of all nine bodies (U1–U4, MP, L1–L4) over time from the logged poses.</li>
+</ul></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container narrow">
+    <h2 class="title">Repository</h2>
+    <div class="content">
+<div class="scroll"><table><thead><tr><th>File</th><th>Contents</th></tr></thead><tbody><tr><td><code>cable_driven_parallel_robot2022.slx</code></td><td>Simulink model, MATLAB R2022a</td></tr><tr><td><code>cable_driven_parallel_robot.slx.r2019b</code></td><td>The same model saved for MATLAB R2019b</td></tr><tr><td><code>Model_Info.m</code></td><td>Physical parameters: cable length, platform, mobile-robot and quadrotor geometry, mass and inertia, initial poses</td></tr><tr><td><code>visualize_all.m</code>, <code>visualize_frame.m</code></td><td>Frame-by-frame 3-D visualisation of all nine bodies</td></tr></tbody></table></div>
+<p>Run <code>Model_Info.m</code> to load the parameters, open the Simulink model and run it; then call <code>visualize_all</code> with the logged poses. Requires MATLAB R2022a or later (R2019b with the older file).</p>
+</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container narrow">
+    <h2 class="title">Related Work</h2>
+    <div class="content"><ul>
+<li><a href="https://siddharthumakarthikeyan.github.io/QCDPM-Isaac-Sim/">Quadrotor-Based Mobile Cable-Driven Parallel Manipulator</a>: the full system in NVIDIA Isaac Sim with PhysX cables, winches and a C++ estimation and control core.</li>
+<li><a href="https://siddharthumakarthikeyan.github.io/qcdpr-lpv-mpc-fl/">Real-Time LPV-MPC with Feedback Linearisation</a>: the control framework for this system, with tension distribution and online estimation.</li>
+</ul></div>
+  </div>
+</section>
+
+<section class="section light" id="BibTeX">
+  <div class="container narrow">
+    <h2 class="title" style="text-align:left">BibTeX</h2>
+    <div class="bibwrap">
+      <button class="button copy" id="copyBib" type="button">Copy</button>
+<pre id="bibtex">@phdthesis{umakarthikeyan_qcdpm,
+  author = {Umakarthikeyan, Siddharth},
+  title  = {Quadrotor-Based Mobile Cable-Driven Parallel Manipulator},
+  school = {SASTRA Deemed to be University},
+  year   = {2025},
+  note   = {Dynamics model: https://github.com/siddharthumakarthikeyan/CDPM-Dynamics}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Code © Siddharth Umakarthikeyan. See the <a href="https://github.com/siddharthumakarthikeyan/CDPM-Dynamics">repository</a>.</p>
+    <p>This page is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>. Website design adapted from the <a href="https://nerfies.github.io/">Nerfies</a> project page template.</p>
+  </div>
+</footer>
+
+<script>
+{
+  const btn = document.getElementById('copyBib');
+  btn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(document.getElementById('bibtex').textContent); btn.textContent = 'Copied'; }
+    catch (e) { btn.textContent = 'Select to copy'; }
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+  });
+}
+</script>
+</body>
+</html>
